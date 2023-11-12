@@ -5,6 +5,6 @@ public abstract class Exp {
 
     public abstract void print();
 
-    public abstract int eval();
+    public abstract double eval();
 
 }

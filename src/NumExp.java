@@ -1,8 +1,8 @@
 public class NumExp extends Exp{
 
-    private int number;
+    private final double number;
 
-    public NumExp(int number){
+    public NumExp(double number){
         super();
         this.number = number;
     }
@@ -11,7 +11,7 @@ public class NumExp extends Exp{
         System.out.println(number);
     }
 
-    public int eval(){
+    public double eval(){
         return number;
     }
 }

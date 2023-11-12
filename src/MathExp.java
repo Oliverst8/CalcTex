@@ -11,7 +11,7 @@ public class MathExp extends Exp{
         expression.print();
     }
 
-    public int eval(){
+    public double eval(){
         return expression.eval();
     }
 

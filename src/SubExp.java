@@ -16,7 +16,7 @@ public class SubExp extends Exp {
         System.out.print(")");
     }
 
-    public int eval() {
+    public double eval() {
         return left.eval() - right.eval();
     }
 }
