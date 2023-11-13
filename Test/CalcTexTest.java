@@ -40,7 +40,7 @@ class CalcTexTest {
     @Test
     void stringToExp6() {
         equation = "\\frac{\\frac{4}{4}}{4}";
-        assertEquals(0.25,CalcTex.stringToExp(equation).eval());
+        assertEquals(0.25,CalcTex.calc(equation,2));
     }
 
     @Test
@@ -83,5 +83,34 @@ class CalcTexTest {
         equation = "(2+2)*4";
         CalcTex.stringToExp(equation).print();
         assertEquals(16,CalcTex.stringToExp(equation).eval());
+    }
+
+
+    @Test
+    void roundTest1(){
+        assertEquals(0.269, CalcTex.round(0.268565,3));
+    }
+
+    @Test
+    void calculation1(){
+        equation = "\\frac{\\frac{90}{100}\\cdot \\frac{2}{100}}{\\frac{67}{1000}}";
+        assertEquals(0.269,CalcTex.calc(equation, 3));
+    }
+
+    @Test
+    void calculation2(){
+        equation = "\\frac{18}{67}";
+        assertEquals(0.269,CalcTex.calc(equation, 3));
+    }
+    @Test
+    void calculation3(){
+        equation = "\\frac{\\frac{5}{100}\\cdot\\frac{98}{100}}{\\frac{67}{1000}}";
+        assertEquals(0.731,CalcTex.calc(equation, 3));
+    }
+
+    @Test
+    void calculation4(){
+        equation = "\\frac{\\frac{10}{100}\\cdot \\frac{2}{100}}{\\frac{933}{1000}}";
+        assertEquals(0.0021,CalcTex.calc(equation, 4));
     }
 }

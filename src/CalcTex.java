@@ -8,8 +8,7 @@ public class CalcTex {
     public static String input(){
         Scanner scanner = new Scanner(System.in);
         String input = scanner.nextLine();
-        scanner.close();
-        return input;
+        return input.replace(" ", "");
     }
 
     public static NumExp stringToNumExp(String input){
@@ -33,7 +32,7 @@ public class CalcTex {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    public static int splitingIndex(long occurences, String character, String equation){
+    public static int splittingIndex(long occurences, String character, String equation){
         int amountFound = 0;
         int startBracket = 0;
         int endBracket = 0;
@@ -77,7 +76,7 @@ public class CalcTex {
         String[] operators = {"+","-","*","/"};
             for (String operator : operators) {
                 if (occuringses(equation, operator) > 0) {
-                    int splitI = splitingIndex(occuringses(equation, operator), operator, equation);
+                    int splitI = splittingIndex(occuringses(equation, operator), operator, equation);
                     if(splitI == -1) continue;
                     splitEquation[0] = equation.substring(0, splitI);
                     splitEquation[1] = equation.substring(splitI + 1);
@@ -134,19 +133,38 @@ public class CalcTex {
 
     public static String latexFracToStringFrac(String latexFrac){
         StringBuilder builder = new StringBuilder();
+        builder.append("(");
         boolean isFirstEndBracketFound = false;
-        for(int i = 0; i < latexFrac.length(); i++){
-            if(Character.isDigit(latexFrac.charAt(i))) builder.append(latexFrac.charAt(i));
-            if(latexFrac.charAt(i) == '}'){
-                if(isFirstEndBracketFound) return builder.toString();
-                isFirstEndBracketFound = true;
-                builder.append("/");
+        int startBrackets = 0;
+        int endBrackets = 0;
+        boolean fractionStartBracketFound = false;
+        for (int i = 5; i < latexFrac.length(); i++) {
+            if(latexFrac.charAt(i) != '{' && latexFrac.charAt(i) != '}' && startBrackets != endBrackets) {
+                builder.append(latexFrac.charAt(i));
+            } else{
+                switch (latexFrac.charAt(i)) {
+                    case '{' -> startBrackets++;
+                    case '}' -> endBrackets++;
+                }
+                if(startBrackets == endBrackets){
+                    if(isFirstEndBracketFound) return builder.append(")").toString();
+                    isFirstEndBracketFound = true;
+                    builder.append(")/(");
+                    fractionStartBracketFound = false;
+                } else if (fractionStartBracketFound){
+                    builder.append(latexFrac.charAt(i));
+                } else{
+                    fractionStartBracketFound = true;
+                }
             }
+
+
         }
+
         throw new NoSuchElementException("No fraction in argument");
     }
 
-    //Cant do fractions within fractions
+
     public static String replaceAllFractions(String equation){
         String output = equation;
 
@@ -155,13 +173,21 @@ public class CalcTex {
                 if (equation.charAt(i + 1) == 'f') {
                     int end = 0;
                     boolean isFirstBracketFound = false;
+                    int startBrackets = 0;
+                    int endBrackets = 0;
                     for (int j = i; j < equation.length(); j++) {
-                        if(equation.charAt(j) == '}') {
+                        switch (equation.charAt(j)) {
+                            case '{' -> startBrackets++;
+                            case '}' -> endBrackets++;
+                        }
+                        if(equation.charAt(j) == '}' && startBrackets == endBrackets) {
                             end = j;
                             if(isFirstBracketFound) break;
                             isFirstBracketFound = true;
                         }
+
                     }
+
                     output = equation.substring(0, i) + latexFracToStringFrac(equation.substring(i,end+1)) + equation.substring(end+1);
                 }
             }
@@ -169,22 +195,11 @@ public class CalcTex {
         return output;
     }
 
-    //Cant do fractions if they have more then on number in both spots
-    public static String replaceFractions(String equation){
-        String output = equation;
-        for(int i = 0; i < equation.length(); i++){
-            if(equation.charAt(i) == '\\'){
-                if(equation.charAt(i+1) == 'f'){
-                    output = equation.substring(0,i) + equation.charAt(i+6) + "/" + equation.charAt(i+9) + equation.substring(i+11);
-                }
-            }
-        }
-        return output;
-    }
+
 
     public static String replaceAllLatex(String input){
         String output = input.replace("\\cdot", "*");
-        if(output.contains("\\frac")){
+        while(output.contains("\\frac")){
             output = replaceAllFractions(output);
         }
         return output;
@@ -192,13 +207,23 @@ public class CalcTex {
 
 
     public static void main(String[] args) {
-        /*Exp equation;
-        String input = input().replace(" ", "");
-        equation = stringToExp(replaceAllLatex(input));
-        System.out.println(equation.eval()); */
+        Scanner scanner = new Scanner(System.in);
+        while(true) {
+            System.out.println("Please enter equation: ");
+            String input = input();
+            if(input.equals("quit")) break;
+            System.out.println("Please enter amount of decimals");
+            int decimals = scanner.nextInt();
+            System.out.println(calc(input, decimals));
+        }
+        scanner.close();
+    }
 
-        //String input = "(2+2)/(4)+3/4*2+2";
-        //System.out.println(occuringses(input, "("));
-        //System.out.print(stringToExp(replaceAllLatex(input.replace(" ", ""))).eval());
+    public static double calc(String input, int decimals){
+        return round(stringToExp(replaceAllLatex(input.replace(" ", ""))).eval(), decimals);
+    }
+
+    public static double round(double number, int decimals){
+        return (Math.round(number * (Math.pow(10, decimals)))/(Math.pow(10, decimals)));
     }
 }
