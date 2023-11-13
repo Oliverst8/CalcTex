@@ -9,6 +9,7 @@ public class SubExp extends Exp {
     }
 
     public void print() {
+        //System.out.print("SubExp(");
         System.out.print("(");
         left.print();
         System.out.print(" - ");

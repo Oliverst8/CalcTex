@@ -9,9 +9,11 @@ public class MulExp extends Exp {
     }
     
     public void print() {
+        //System.out.print("MulExp(");
         System.out.print("(");
         left.print(); // recursion!
-        System.out.print(" \\cdot ");
+        //System.out.print(" \\cdot ");
+        System.out.print(" * ");
         right.print(); // recursion!
         System.out.print(")");
     }

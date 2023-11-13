@@ -8,7 +8,7 @@ public class NumExp extends Exp{
     }
 
     public void print(){
-        System.out.println(number);
+        System.out.print(number);
     }
 
     public double eval(){

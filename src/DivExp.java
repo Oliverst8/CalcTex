@@ -10,11 +10,15 @@ public class DivExp extends Exp {
     }
     
     public void print() {
-        System.out.print("\\frac{");
+        //System.out.print("\\frac{");
+        //System.out.print("DivExp(");
+        System.out.print("(");
         left.print();
-        System.out.print("}{");
+        //System.out.print("}{");
+        System.out.print(" / ");
         right.print();
-        System.out.print("}");
+        //System.out.print("}");
+        System.out.print(")");
     }
 
     public double eval() {

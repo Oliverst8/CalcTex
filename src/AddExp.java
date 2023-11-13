@@ -9,6 +9,7 @@ public class AddExp extends Exp{
     }
 
     public void print(){
+        //System.out.print("AddExp(");
         System.out.print("(");
         left.print();
         System.out.print(" + ");
