@@ -35,59 +35,58 @@ public class CalcTex {
 
     public static int splitingIndex(long occurences, String character, String equation){
         int amountFound = 0;
-        for (int i = 0; i < equation.length();i++) {
-            if(equation.charAt(i) == character.charAt(0)) amountFound++;
-            if(Math.ceil(occurences/2.0) == amountFound || occurences == amountFound) return i;
+        int startBracket = 0;
+        int endBracket = 0;
+        for (int j = 0; j < 2; j++) {
+            for (int i = 0; i < equation.length(); i++) {
+
+                    switch (equation.charAt(i)) {
+                        case '(':
+                            startBracket++;
+                            break;
+                        case ')':
+                            endBracket++;
+                            break;
+                        default:
+                            if (equation.charAt(i) == character.charAt(0) ){
+                                if((startBracket == endBracket || j == 1)){
+                                    amountFound++;
+                                } else{
+                                    occurences--;
+                                    if(occurences == 0){
+                                        return -1;
+                                    }
+                                }
+
+                            }
+                            break;
+                    }
+
+
+
+                if (Math.ceil(occurences / 2.0) == amountFound || occurences == amountFound) return i;
+            }
         }
         throw new UnsupportedOperationException("No character index found");
     }
 
-    //This does not work
+
     public static String[] splitEquation(String equation){
         //throw new UnsupportedOperationException("Not implemented");
         String[] splitEquation = new String[3];
-        if(occuringses(equation, "(") > 0){
-            int endBracketNeeded = 0;
-            int startBracketIndex = -1;
-            for (int i = 0; i < equation.length() ; i++) {
-                if(equation.charAt(i) == '(') {
-                    endBracketNeeded++;
-                    if(startBracketIndex == -1) startBracketIndex = i;
-                }
-                if(equation.charAt(i) == ')'){
-                    if(endBracketNeeded != 1){
-                        endBracketNeeded--;
-
-                    } else{
-                        int operatorIndex = i+1;
-                        if(operatorIndex >= equation.length()){
-                            operatorIndex = startBracketIndex-1;
-                            splitEquation[0] = equation.substring(0, operatorIndex);
-                            splitEquation[1] = equation.substring(startBracketIndex);
-                        } else {
-                            splitEquation[0] = equation.substring(0, i + 1);
-                            splitEquation[1] = equation.substring(i+2);
-                        }
-                        splitEquation[2] = String.valueOf(equation.charAt(operatorIndex));
-                        return splitEquation;
-                    }
-
-                }
-
-            }
-        }
-
         String[] operators = {"+","-","*","/"};
-        for(String operator : operators){
-            if(occuringses(equation, operator) > 0){
-                int splitI = splitingIndex(occuringses(equation, operator), operator, equation);
-                splitEquation[0] = equation.substring(0,splitI);
-                splitEquation[1] = equation.substring(splitI+1);
-                splitEquation[2] = operator;
-                return splitEquation;
+            for (String operator : operators) {
+                if (occuringses(equation, operator) > 0) {
+                    int splitI = splitingIndex(occuringses(equation, operator), operator, equation);
+                    if(splitI == -1) continue;
+                    splitEquation[0] = equation.substring(0, splitI);
+                    splitEquation[1] = equation.substring(splitI + 1);
+                    splitEquation[2] = operator;
+                    return splitEquation;
+                }
             }
-        }
-        return splitEquation;
+        return splitEquation(equation.substring(1, equation.length()-1));
+        //throw new NullPointerException("Split equation cant be null. Was null for: " + equation);
     }
 
     public static Exp stringToExp(String equation){
