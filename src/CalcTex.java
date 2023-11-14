@@ -220,13 +220,22 @@ public class CalcTex {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        while(true) {
-            System.out.println("Please enter equation: ");
-            String input = input();
-            if(input.equals("quit")) break;
-            System.out.println("Please enter amount of decimals");
-            int decimals = scanner.nextInt();
-            System.out.println(calc(input, decimals));
+        try {
+            while (true) {
+                System.out.println("Please enter equation: ");
+                String input = input();
+                if (input.equals("quit")) break;
+                System.out.println("Please enter amount of decimals");
+                int decimals;
+                if(scanner.hasNextInt()){
+                    decimals = scanner.nextInt();
+                } else{
+                    throw new Exception("Amount of decimals must be a number");
+                }
+                System.out.println(calc(input, decimals));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
         scanner.close();
     }
