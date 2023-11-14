@@ -113,4 +113,21 @@ class CalcTexTest {
         equation = "\\frac{\\frac{10}{100}\\cdot \\frac{2}{100}}{\\frac{933}{1000}}";
         assertEquals(0.0021,CalcTex.calc(equation, 4));
     }
+    @Test
+    void calculation5(){
+        equation = "2^{10}";
+        assertEquals(1024,CalcTex.calc(equation, 4));
+    }
+
+    @Test
+    void calculation6(){
+        equation = "2^{10+5}*2";
+        assertEquals(65536,CalcTex.calc(equation, 4));
+    }
+
+    @Test
+    void calculation7(){
+        equation = "\\frac{2^{10+5}*2}{10}";
+        assertEquals(6553.6,CalcTex.calc(equation, 4));
+    }
 }

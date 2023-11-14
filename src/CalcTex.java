@@ -11,7 +11,7 @@ public class CalcTex {
         return input.replace(" ", "");
     }
 
-    public static NumExp stringToNumExp(String input){
+    public static Exp stringToNumExp(String input){
         return new NumExp(Integer.parseInt(input));
     }
 
@@ -26,6 +26,8 @@ public class CalcTex {
                 return new DivExp(left, right);
             case "*":
                 return new MulExp(left, right);
+            case "^":
+                return new PowExp(left, right);
             default:
                 break;
         }
@@ -73,7 +75,7 @@ public class CalcTex {
     public static String[] splitEquation(String equation){
         //throw new UnsupportedOperationException("Not implemented");
         String[] splitEquation = new String[3];
-        String[] operators = {"+","-","*","/"};
+        String[] operators = {"+","-","*","/","^"};
             for (String operator : operators) {
                 if (occuringses(equation, operator) > 0) {
                     int splitI = splittingIndex(occuringses(equation, operator), operator, equation);
@@ -90,7 +92,7 @@ public class CalcTex {
 
     public static Exp stringToExp(String equation){
         if (equation == null) throw new NullPointerException("Equation cant be null");
-        Pattern operators = Pattern.compile("(:?[\\+\\/\\*\\-])");
+        Pattern operators = Pattern.compile("(:?[\\+\\/\\*\\-\\^])");
         Matcher matcher = operators.matcher(equation);
         long amountOfOperators = matcher.results().count();
         if(amountOfOperators <= 1) return stringToSingleExp(equation);
@@ -113,7 +115,10 @@ public class CalcTex {
         if(input == null) throw new NullPointerException("Input cant be null");
         input = removeParenthesis(input);
         Exp output = null;
-        if(input.contains("*")){
+        if(input.contains("^")){
+            String[] numberExpressions = input.split("(:?\\^)");
+            output = new PowExp(stringToNumExp(numberExpressions[0]), stringToNumExp(numberExpressions[1]));
+        } else if(input.contains("*")){
             String[] numberExpressions = input.split("(:?\\*)");
             output = new MulExp(stringToNumExp(numberExpressions[0]), stringToNumExp(numberExpressions[1]));
         } else if(input.contains("/")){
@@ -126,7 +131,7 @@ public class CalcTex {
             String[] numberExpressions = input.split("-");
             output = new SubExp(stringToNumExp(numberExpressions[0]), stringToNumExp(numberExpressions[1]));
         } else{
-            output = new NumExp(Integer.parseInt(input));
+            output = stringToNumExp(input);
         }
         return output;
     }
@@ -197,12 +202,19 @@ public class CalcTex {
 
 
 
+
+
     public static String replaceAllLatex(String input){
         String output = input.replace("\\cdot", "*");
         while(output.contains("\\frac")){
             output = replaceAllFractions(output);
         }
+        output = replaceCurlyBrackets(output);
         return output;
+    }
+
+    private static String replaceCurlyBrackets(String input) {
+        return input.replace("{","(").replace("}",")");
     }
 
 
