@@ -130,4 +130,22 @@ class CalcTexTest {
         equation = "\\frac{2^{10+5}*2}{10}";
         assertEquals(6553.6,CalcTex.calc(equation, 4));
     }
+
+    @Test
+    void calculation8(){
+        equation = "\\frac{2^{10+\\sqrt{5}^2}*2}{10}";
+        assertEquals(6553.6,CalcTex.calc(equation, 4));
+    }
+
+    @Test
+    void calculation9(){
+        equation = "\\sqrt{2+5^2}^2";
+        assertEquals(27,CalcTex.calc(equation, 4));
+    }
+
+    @Test
+    void calculation10(){
+        equation = "\\sqrt{2+\\sqrt{5}^2}^2";
+        assertEquals(7,CalcTex.calc(equation, 4));
+    }
 }

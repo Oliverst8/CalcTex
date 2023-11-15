@@ -34,7 +34,7 @@ public class CalcTex {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    public static int splittingIndex(long occurences, String character, String equation){
+    public static int[] splittingIndex(long occurences, String character, String equation){
         int amountFound = 0;
         int startBracket = 0;
         int endBracket = 0;
@@ -55,7 +55,7 @@ public class CalcTex {
                                 } else{
                                     occurences--;
                                     if(occurences == 0){
-                                        return -1;
+                                        return new int[]{-1,0};
                                     }
                                 }
 
@@ -65,7 +65,13 @@ public class CalcTex {
 
 
 
-                if (Math.ceil(occurences / 2.0) == amountFound || occurences == amountFound) return i;
+                if (Math.ceil(occurences / 2.0) == amountFound || occurences == amountFound) {
+                    if(character.charAt(0) == 's'){
+                        return new int[]{i,1};
+                    } else {
+                        return new int[]{i,0};
+                    }
+                }
             }
         }
         throw new UnsupportedOperationException("No character index found");
@@ -74,15 +80,28 @@ public class CalcTex {
 
     public static String[] splitEquation(String equation){
         //throw new UnsupportedOperationException("Not implemented");
-        String[] splitEquation = new String[3];
-        String[] operators = {"+","-","*","/","^"};
+        String[] splitEquation;
+        String[] operators = {"+","-","*","/","^","s"};
             for (String operator : operators) {
                 if (occuringses(equation, operator) > 0) {
-                    int splitI = splittingIndex(occuringses(equation, operator), operator, equation);
-                    if(splitI == -1) continue;
-                    splitEquation[0] = equation.substring(0, splitI);
-                    splitEquation[1] = equation.substring(splitI + 1);
-                    splitEquation[2] = operator;
+                    int[] splitI = splittingIndex(occuringses(equation, operator), operator, equation);
+                    if(splitI[0] == -1) continue;
+                    if(splitI[1] == 0){
+                        splitEquation = new String[3];
+                        splitEquation[0] = equation.substring(0, splitI[0]);
+                        splitEquation[1] = equation.substring(splitI[0] + 1);
+                        splitEquation[2] = operator;
+                    } else if(splitI[1] == 1){
+                        splitEquation = new String[2];
+                        StringBuilder equationWithoutOperator = new StringBuilder();
+                        for (int i = 0; i < equation.length(); i++) {
+                            if(i != splitI[0]) equationWithoutOperator.append(equation.charAt(i));
+                        }
+                        splitEquation[0] = equationWithoutOperator.toString();
+                        splitEquation[1] = operator;
+                    } else{
+                        throw new IllegalArgumentException("No split operator found");
+                    }
                     return splitEquation;
                 }
             }
@@ -92,12 +111,24 @@ public class CalcTex {
 
     public static Exp stringToExp(String equation){
         if (equation == null) throw new NullPointerException("Equation cant be null");
-        Pattern operators = Pattern.compile("(:?[\\+\\/\\*\\-\\^])");
+        Pattern operators = Pattern.compile("(:?[\\+\\/\\*\\-\\^s])");
         Matcher matcher = operators.matcher(equation);
         long amountOfOperators = matcher.results().count();
         if(amountOfOperators <= 1) return stringToSingleExp(equation);
         String[] splitEquation = splitEquation(equation);
-        return combineExpressions(stringToExp(splitEquation[0]), stringToExp(splitEquation[1]), splitEquation[2]);
+        if(splitEquation.length == 3) {
+            return combineExpressions(stringToExp(splitEquation[0]), stringToExp(splitEquation[1]), splitEquation[2]);
+        } else{
+            return combineUniaryExpression(stringToExp(splitEquation[0]),splitEquation[1]);
+        }
+    }
+
+    private static Exp combineUniaryExpression(Exp exp, String operator) {
+        switch (operator){
+            case "s":
+                return new SqrtExp(exp);
+        }
+        throw new IllegalArgumentException("Couldnt find matching operation");
     }
 
     public static long occuringses(String str, String character){
@@ -115,7 +146,10 @@ public class CalcTex {
         if(input == null) throw new NullPointerException("Input cant be null");
         input = removeParenthesis(input);
         Exp output = null;
-        if(input.contains("^")){
+        if(input.contains("s")) {
+            String numberExpressions = input.replace("s","");
+            output = new SqrtExp(stringToExp(numberExpressions));
+        } else if(input.contains("^")){
             String[] numberExpressions = input.split("(:?\\^)");
             output = new PowExp(stringToNumExp(numberExpressions[0]), stringToNumExp(numberExpressions[1]));
         } else if(input.contains("*")){
@@ -201,7 +235,9 @@ public class CalcTex {
     }
 
 
-
+    private static String replaceSQRT(String output) {
+        return output.replace("\\sqrt", "s");
+    }
 
 
     public static String replaceAllLatex(String input){
@@ -210,8 +246,11 @@ public class CalcTex {
             output = replaceAllFractions(output);
         }
         output = replaceCurlyBrackets(output);
+        output = replaceSQRT(output);
         return output;
     }
+
+
 
     private static String replaceCurlyBrackets(String input) {
         return input.replace("{","(").replace("}",")");
