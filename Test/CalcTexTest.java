@@ -148,4 +148,32 @@ class CalcTexTest {
         equation = "\\sqrt{2+\\sqrt{5}^2}^2";
         assertEquals(7,CalcTex.calc(equation, 4));
     }
+
+    @Test
+    void testFactorialsAlone() {
+        equation = "7!";
+        assertEquals(5040,CalcTex.calc(equation, 4));
+    }
+
+    @Test
+    void testFactorialsInGroup() {
+        equation = "7!+10-5";
+        assertEquals(5045,CalcTex.calc(equation, 4));
+    }
+    @Test
+    void testFactorialsInGroupWithParentheses() {
+        equation = "7!+(10-5)";
+        assertEquals(5045,CalcTex.calc(equation, 4));
+    }
+    @Test
+    void testFactorialsInGroupWithParentheses2() {
+        equation = "(3*2+1)!";
+        assertEquals(5040,CalcTex.calc(equation, 4));
+    }
+
+    @Test
+    void testDecimalInput(){
+        equation = "\\frac{3.5}{1}";
+        assertEquals(3.5,CalcTex.calc(equation,1));
+    }
 }

@@ -66,7 +66,7 @@ public class CalcTex {
 
 
                 if (Math.ceil(occurences / 2.0) == amountFound || occurences == amountFound) {
-                    if(character.charAt(0) == 's'){
+                    if(character.charAt(0) == 's' || character.charAt(0) == '!'){
                         return new int[]{i,1};
                     } else {
                         return new int[]{i,0};
@@ -81,7 +81,7 @@ public class CalcTex {
     public static String[] splitEquation(String equation){
         //throw new UnsupportedOperationException("Not implemented");
         String[] splitEquation;
-        String[] operators = {"+","-","*","/","^","s"};
+        String[] operators = {"+","-","*","/","^","s","!"};
             for (String operator : operators) {
                 if (occuringses(equation, operator) > 0) {
                     int[] splitI = splittingIndex(occuringses(equation, operator), operator, equation);
@@ -111,7 +111,7 @@ public class CalcTex {
 
     public static Exp stringToExp(String equation){
         if (equation == null) throw new NullPointerException("Equation cant be null");
-        Pattern operators = Pattern.compile("(:?[\\+\\/\\*\\-\\^s])");
+        Pattern operators = Pattern.compile("(:?[\\+\\/\\*\\-\\^s!])");
         Matcher matcher = operators.matcher(equation);
         long amountOfOperators = matcher.results().count();
         if(amountOfOperators <= 1) return stringToSingleExp(equation);
@@ -127,6 +127,8 @@ public class CalcTex {
         switch (operator){
             case "s":
                 return new SqrtExp(exp);
+            case "!":
+                return new FacExp(exp);
         }
         throw new IllegalArgumentException("Couldnt find matching operation");
     }
@@ -148,7 +150,7 @@ public class CalcTex {
         Exp output = null;
         if(input.contains("s")) {
             String numberExpressions = input.replace("s","");
-            output = new SqrtExp(stringToExp(numberExpressions));
+            output = new SqrtExp(stringToNumExp(numberExpressions));
         } else if(input.contains("^")){
             String[] numberExpressions = input.split("(:?\\^)");
             output = new PowExp(stringToNumExp(numberExpressions[0]), stringToNumExp(numberExpressions[1]));
@@ -164,6 +166,9 @@ public class CalcTex {
         } else if(input.contains("-")){
             String[] numberExpressions = input.split("-");
             output = new SubExp(stringToNumExp(numberExpressions[0]), stringToNumExp(numberExpressions[1]));
+        } else if (input.contains("!")){
+            String numberExpressions = input.replace("!", "");
+            output = new FacExp(stringToNumExp(numberExpressions));
         } else{
             output = stringToNumExp(input);
         }
