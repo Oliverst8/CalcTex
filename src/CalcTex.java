@@ -12,7 +12,7 @@ public class CalcTex {
     }
 
     public static Exp stringToNumExp(String input){
-        return new NumExp(Integer.parseInt(input));
+        return new NumExp(Double.parseDouble(input));
     }
 
     public static Exp combineExpressions(Exp left, Exp right, String operator){
