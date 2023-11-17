@@ -1,12 +1,9 @@
-public class DivExp extends Exp {
-    protected Exp left;
-    protected Exp right;
+public class DivExp extends BinaryExp {
 
     public DivExp(Exp left, Exp right) {
-        super();
+        super(left, right);
         if(right.eval() == 0) throw new IllegalArgumentException("Denominator cant be 0");
-        this.left = left;
-        this.right = right;
+
     }
     
     public void print() {

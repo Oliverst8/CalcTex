@@ -1,11 +1,9 @@
-public class MulExp extends Exp {
-    protected Exp left;
-    protected Exp right;
+public class MulExp extends BinaryExp {
+
     
     public MulExp(Exp left, Exp right) {
-        super();
-        this.left = left;
-        this.right = right;
+        super(left,right);
+
     }
     
     public void print() {

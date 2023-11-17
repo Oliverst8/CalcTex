@@ -1,21 +1,18 @@
-public class PowExp extends Exp{
-    Exp number;
-    Exp power;
-    public PowExp(Exp number, Exp power){
-        this.number = number;
-        this.power = power;
+public class PowExp extends BinaryExp{
+    public PowExp(Exp left, Exp right){
+        super(left, right);
     }
 
     public void print() {
         System.out.print("(");
-        number.print();
+        left.print();
         System.out.print("^");
-        power.print();
+        right.print();
         System.out.print(")");
     }
 
     @Override
     public double eval() {
-        return Math.pow(number.eval(), power.eval());
+        return Math.pow(left.eval(), right.eval());
     }
 }

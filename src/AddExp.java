@@ -1,11 +1,8 @@
-public class AddExp extends Exp{
-    private final Exp left;
-    private final Exp right;
+public class AddExp extends BinaryExp{
+
 
     public AddExp(Exp left, Exp right){
-        super();
-        this.left = left;
-        this.right = right;
+        super(left, right);
     }
 
     public void print(){
